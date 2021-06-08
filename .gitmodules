@@ -1,0 +1,3 @@
+[submodule "GEEK-MALICIOUS"]
+	path = GEEK-MALICIOUS
+	url = https://github.com/geeksonsecurity/js-malicious-dataset.git
