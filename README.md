@@ -1,7 +1,10 @@
-# detection_methods
+# Malicious JS Detection
 
-article: https://swag.cispa.saarland/papers/fass2019jstap.pdf
+[Article](https://swag.cispa.saarland/papers/fass2019jstap.pdf)
 
-dataset: https://github.com/geeksonsecurity/js-malicious-dataset
+[Dataset](https://github.com/geeksonsecurity/js-malicious-dataset)
 
-JStap GitHub: https://github.com/Aurore54F/JStap
+[JStap GitHub](https://github.com/Aurore54F/JStap)
+
+## Submodules
+There are submodule to each dataset for easier cloning.
