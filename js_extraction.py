@@ -14,5 +14,3 @@ def tokenize_html(html: str):
             tokens += esprima.tokenize(program)
     
     return tokens
-
-print(tokenize_html("<head>blah</head><script>var x = 1;</script>"))
