@@ -17,14 +17,15 @@ def is_valid_malicious_path(path):
     return all(ignore_pattern not in path for ignore_pattern in ignore_files_pattern)
 
 def get_all_malicious_js_token():
-    for html_file_path in glob.iglob("*MALICOUS/**/*.html", recursive=True):
-        print(html_file_path)
+    malicious_path_pattern = "*MALICIOUS/**/*"
+    for html_file_path in glob.iglob(f"{malicious_path_pattern}.html", recursive=True):
+        #print(html_file_path)
         if is_valid_malicious_path(html_file_path):
             with open(html_file_path, "r", errors='surrogateescape') as html:
                 yield from tokenize_html(html.read())
     
-    for js_file_path in glob.iglob("*MALICOUS/**/*.js", recursive=True):
-        print(js_file_path)
+    for js_file_path in glob.iglob(f"{malicious_path_pattern}.js", recursive=True):
+        #print(js_file_path)
         if is_valid_malicious_path(js_file_path):
             with open(js_file_path, "r", errors='surrogateescape') as js:
                     yield esprima.tokenize(js.read())
