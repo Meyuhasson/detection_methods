@@ -28,7 +28,7 @@ def is_valid_path(path):
     return all(ignore_pattern not in path for ignore_pattern in ignore_files_pattern)
 
 def get_token_from_file(malicious: bool, js_file=True):
-    path_pattern = "*MALICIOUS*/**/*" if malicious else "*BENIGN*/**/*" 
+    path_pattern = "MALICIOUS/**/*" if malicious else "BENIGN/**/*" 
     path_pattern = f"{path_pattern}.js" if js_file else f"{path_pattern}.html"
 
     for file_path in glob.iglob(path_pattern, recursive=True):
