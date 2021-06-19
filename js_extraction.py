@@ -23,7 +23,7 @@ def tokenize(file_path: str, js_file=True):
         else:
             yield from tokenize_html(f.read())
 
-def is_valid_path(path):
+def is_valid_path(path: str):
     ignore_files_pattern = ['misc', 'ignore']
     return all(ignore_pattern not in path for ignore_pattern in ignore_files_pattern)
 
@@ -47,7 +47,7 @@ def export_file(from_dir: str, malicious: str, js_file=True):
         Path(to_dir_path).mkdir(parents=True, exist_ok=True)
         shutil.copy(file_path, to_dir_path)
 
-def export_html_and_js(from_dir: str, malicious:True):
+def export_html_and_js(from_dir: str, malicious=True):
     export_file(from_dir, malicious, js_file=True)
     export_file(from_dir, malicious, js_file=False)
 
