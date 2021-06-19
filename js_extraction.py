@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup as bs
 import esprima
 import glob
+import shutil
+from pathlib import Path
+import os
 
 def extract_script_from_html(html: str):
     soup = bs(html, "html.parser")
@@ -12,19 +15,37 @@ def tokenize_html(html: str):
         for program in script:
             yield esprima.tokenize(program)
 
-def is_valid_malicious_path(path):
+def tokenize(file_path: str, js_file=True):
+    with open(file_path, "r", errors='surrogateescape') as f:
+        if js_file:
+            yield esprima.tokenize(f.read())
+        else:
+            yield from tokenize_html(f.read())
+
+def is_valid_path(path):
     ignore_files_pattern = ['misc', 'ignore']
     return all(ignore_pattern not in path for ignore_pattern in ignore_files_pattern)
 
-def get_all_malicious_js_token():
-    malicious_path_pattern = "*MALICIOUS/**/*"
-    for html_file_path in glob.iglob(f"{malicious_path_pattern}.html", recursive=True):
-        if is_valid_malicious_path(html_file_path):
-            with open(html_file_path, "r", errors='surrogateescape') as html:
-                yield from tokenize_html(html.read())
-    
-    for js_file_path in glob.iglob(f"{malicious_path_pattern}.js", recursive=True):
-        if is_valid_malicious_path(js_file_path):
-            with open(js_file_path, "r", errors='surrogateescape') as js:
-                    yield esprima.tokenize(js.read())
+def get_token_from_file(malicious: bool, js_file=True):
+    path_pattern = "*MALICIOUS*/**/*" if malicious else "*BENIGN*/**/*" 
+    path_pattern = f"{path_pattern}.js" if js_file else f"{path_pattern}.html"
 
+    for file_path in glob.iglob(path_pattern, recursive=True):
+        if is_valid_path(file_path):
+            tokenize(file_path)
+    
+def get_all_js_token(malicious: bool):
+    get_token_from_file(malicious, js_file=True)
+    get_token_from_file(malicious, js_file=False)
+
+def export_file(from_dir: str, malicious: str, js_file=True):
+    path_pattern = f"{from_dir}/**/*.js" if js_file else f"{from_dir}/**/*.html"
+    to_dir = "MALICIOUS" if malicious else "BENIGN"
+    for file_path in glob.iglob(path_pattern, recursive=True):
+        to_dir_path = os.path.join(to_dir, os.path.dirname(file_path))
+        Path(to_dir_path).mkdir(parents=True, exist_ok=True)
+        shutil.copy(file_path, to_dir_path)
+
+def export_html_and_js(from_dir: str, malicious:True):
+    export_file(from_dir, malicious, js_file=True)
+    export_file(from_dir, malicious, js_file=False)
