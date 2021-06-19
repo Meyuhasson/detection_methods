@@ -4,6 +4,7 @@ import glob
 import shutil
 from pathlib import Path
 import os
+import argparse
 
 def extract_script_from_html(html: str):
     soup = bs(html, "html.parser")
@@ -49,3 +50,13 @@ def export_file(from_dir: str, malicious: str, js_file=True):
 def export_html_and_js(from_dir: str, malicious:True):
     export_file(from_dir, malicious, js_file=True)
     export_file(from_dir, malicious, js_file=False)
+
+def main():
+    parser = argparse.ArgumentParser(description='Export js and HTML files')
+    parser.add_argument('-s', dest="from_dir", type=str, required=True, help="The source directory from which the js and html files are copied")
+    parser.add_argument('-m', "--malicious", dest="malicious", action='store_true', help="Indicates if the files are malicious or benign")
+    args = parser.parse_args()
+    export_html_and_js(args.from_dir, args.malicious)
+
+if __name__ == "__main__":
+    main()
