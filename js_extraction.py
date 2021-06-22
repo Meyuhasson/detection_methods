@@ -33,11 +33,11 @@ def get_token_from_file(malicious: bool, js_file=True):
 
     for file_path in glob.iglob(path_pattern, recursive=True):
         if is_valid_path(file_path):
-            tokenize(file_path)
+            yield from tokenize(file_path)
     
 def get_all_js_token(malicious: bool):
-    get_token_from_file(malicious, js_file=True)
-    get_token_from_file(malicious, js_file=False)
+    yield from get_token_from_file(malicious, js_file=True)
+    yield from get_token_from_file(malicious, js_file=False)
 
 def export_file(from_dir: str, malicious: str, js_file=True):
     path_pattern = f"{from_dir}/**/*.js" if js_file else f"{from_dir}/**/*.html"
