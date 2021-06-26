@@ -5,8 +5,9 @@ import js_extraction
 def tfidf_extractor(ngramx,ngramy):
     list_of_vectors_benign = []
     list_of_vectors_malicious = []
-    a = js_extraction.get_all_js_token(True)
-    for tokens in a:
+    for tokens in js_extraction.get_all_js_token(True):
+        if not tokens:
+            continue
         flat_list = []
         for token in tokens:
             flat_list.append(token.type)
@@ -14,8 +15,9 @@ def tfidf_extractor(ngramx,ngramy):
         vectorizer = TfidfVectorizer(ngram_range = (ngramx, ngramy))
         X = vectorizer.fit_transform(flat_list)
         list_of_vectors_benign.append(X)
-    b = js_extraction.get_all_js_token(False)
-    for tokens in b:
+    for tokens in js_extraction.get_all_js_token(False):
+        if not tokens:
+            continue
         flat_list = []
         for token in tokens:
             flat_list.append(token.type)
