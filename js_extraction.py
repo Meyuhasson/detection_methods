@@ -17,11 +17,14 @@ def tokenize_html(html: str):
             yield esprima.tokenize(program)
 
 def tokenize(file_path: str, js_file=True):
-    with open(file_path, "r", errors='surrogateescape') as f:
-        if js_file:
-            yield esprima.tokenize(f.read())
-        else:
-            yield from tokenize_html(f.read())
+    try:
+        with open(file_path, "r", errors='surrogateescape') as f:
+            if js_file:
+                yield esprima.tokenize(f.read())
+            else:
+                yield from tokenize_html(f.read())
+    except:
+        yield []
 
 def is_valid_path(path: str):
     ignore_files_pattern = ['misc', 'ignore']
@@ -33,7 +36,7 @@ def get_token_from_file(malicious: bool, js_file=True):
 
     for file_path in glob.iglob(path_pattern, recursive=True):
         if is_valid_path(file_path):
-            yield from tokenize(file_path)
+            yield from tokenize(file_path, js_file)
     
 def get_all_js_token(malicious: bool):
     yield from get_token_from_file(malicious, js_file=True)
