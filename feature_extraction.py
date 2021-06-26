@@ -1,66 +1,28 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.corpus import stopwords
+import js_extraction
 
-stopwords.words('english')
+def tfidf_extractor(ngramx,ngramy):
+    list_of_vectors_benign = []
+    list_of_vectors_malicious = []
+    a = js_extraction.get_all_js_token(True)
+    for tokens in a:
+        flat_list = []
+        for token in tokens:
+            flat_list.append(token.type)
+            flat_list.append(token.value)
+        vectorizer = TfidfVectorizer(ngram_range = (ngramx, ngramy))
+        X = vectorizer.fit_transform(flat_list)
+        list_of_vectors_benign.append(X)
+    b = js_extraction.get_all_js_token(False)
+    for tokens in b:
+        flat_list = []
+        for token in tokens:
+            flat_list.append(token.type)
+            flat_list.append(token.value)
+        vectorizer = TfidfVectorizer(ngram_range = (ngramx, ngramy))
+        X = vectorizer.fit_transform(flat_list)
+        list_of_vectors_malicious.append(X)
+    return list_of_vectors_benign, list_of_vectors_malicious
 
-documentA = 'the man went out for a walk'
-documentB = 'the children sat around the fire'
-
-#should get to the function strings and return the features.
-
-bagOfWordsA = documentA.split(' ')
-bagOfWordsB = documentB.split(' ')
-
-uniqueWords = set(bagOfWordsA).union(set(bagOfWordsB))
-
-numOfWordsA = dict.fromkeys(uniqueWords, 0)
-for word in bagOfWordsA:
-    numOfWordsA[word] += 1
-numOfWordsB = dict.fromkeys(uniqueWords, 0)
-for word in bagOfWordsB:
-    numOfWordsB[word] += 1
-
-
-def computeTF(wordDict, bagOfWords):
-    tfDict = {}
-    bagOfWordsCount = len(bagOfWords)
-    for word, count in wordDict.items():
-        tfDict[word] = count / float(bagOfWordsCount)
-    return tfDict
-
-tfA = computeTF(numOfWordsA, bagOfWordsA)
-tfB = computeTF(numOfWordsB, bagOfWordsB)
-
-
-def computeIDF(documents):
-    import math
-    N = len(documents)
-
-    idfDict = dict.fromkeys(documents[0].keys(), 0)
-    for document in documents:
-        for word, val in document.items():
-            if val > 0:
-                idfDict[word] += 1
-
-    for word, val in idfDict.items():
-        idfDict[word] = math.log(N / float(val))
-    return idfDict
-
-idfs = computeIDF([numOfWordsA, numOfWordsB])
-
-def computeTFIDF(tfBagOfWords, idfs):
-    tfidf = {}
-    for word, val in tfBagOfWords.items():
-        tfidf[word] = val * idfs[word]
-    return tfidf
-
-tfidfA = computeTFIDF(tfA, idfs)
-tfidfB = computeTFIDF(tfB, idfs)
-df = pd.DataFrame([tfidfA, tfidfB])
-vectorizer = TfidfVectorizer()
-vectors = vectorizer.fit_transform([documentA, documentB])
-feature_names = vectorizer.get_feature_names()
-dense = vectors.todense()
-denselist = dense.tolist()
-df = pd.DataFrame(denselist, columns=feature_names)
+list_of_vectors_benign, list_of_vectors_malicious = tfidf_extractor(1,1)
