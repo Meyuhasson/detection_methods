@@ -1,5 +1,10 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 import js_extraction
+import pickle
+import os
+
+BENIGN_TFIDF_FNAME = "benign_tfidf.pickle"
+MALICIOUS_TFIDF_FNAME = "malicious_tfidf.pickle"
 
 def tfidf_extractor(ngramx,ngramy):
     flat_benign = []
@@ -7,26 +12,34 @@ def tfidf_extractor(ngramx,ngramy):
     list_of_vectors_benign = []
     list_of_vectors_malicious = []
 
-    print("Extracting benign...")
-    for tokens in js_extraction.get_all_js_token(True):
-        if not tokens:
-            continue
-        flat_list = []
-        for token in tokens:
-            flat_list.append(token.type)
-            flat_list.append(token.value)
-        flat_benign.append(" ".join(flat_list))
 
-    print("Extracting malicious...")
-    for tokens in js_extraction.get_all_js_token(False):
-        if not tokens:
-            continue
-        flat_list = []
-        for token in tokens:
-            flat_list.append(token.type)
-            flat_list.append(token.value)
-        flat_malicious.append(" ".join(flat_list))
+    if os.path.exists(BENIGN_TFIDF_FNAME):
+        print("Loading benign tf-idf from disk")
+        with open(BENIGN_TFIDF_FNAME,'rb') as f:
+            flat_benign = pickle.load(f)
+    else:
+        print("Extracting benign...")
+        for tokens in js_extraction.get_all_js_token(True):
+            if not tokens:
+                continue
+            flat_benign.append(" ".join([f"{token.type}_{token.value.replace(' ','-')}" for token in tokens]))
+        with open(BENIGN_TFIDF_FNAME,'wb') as f:
+            pickle.dump(flat_benign,f)
+
+    if os.path.exists(MALICIOUS_TFIDF_FNAME):
+        print("Loading malicious tf-idf from disk")
+        with open(MALICIOUS_TFIDF_FNAME,'rb') as f:
+            flat_malicious = pickle.load(f)
+    else:
+        print("Extracting malicious...")
+        for tokens in js_extraction.get_all_js_token(False):
+            if not tokens:
+                continue
+            flat_malicious.append(" ".join([f"{token.type}_{token.value.replace(' ','-')}" for token in tokens]))
+        with open(MALICIOUS_TFIDF_FNAME,'wb') as f:
+            pickle.dump(flat_malicious,f)
     
+    print("Training TfidfVectorizer")
     vectorizer = TfidfVectorizer(ngram_range=(ngramx,ngramy))
     vectorizer.fit(flat_benign)
 
