@@ -14,11 +14,9 @@ def tfidf_extractor(ngramx,ngramy):
 
 
     if os.path.exists(BENIGN_TFIDF_FNAME):
-        print("Loading benign tf-idf from disk")
         with open(BENIGN_TFIDF_FNAME,'rb') as f:
             flat_benign = pickle.load(f)
     else:
-        print("Extracting benign...")
         for tokens in js_extraction.get_all_js_token(True):
             if not tokens:
                 continue
@@ -27,11 +25,9 @@ def tfidf_extractor(ngramx,ngramy):
             pickle.dump(flat_benign,f)
 
     if os.path.exists(MALICIOUS_TFIDF_FNAME):
-        print("Loading malicious tf-idf from disk")
         with open(MALICIOUS_TFIDF_FNAME,'rb') as f:
             flat_malicious = pickle.load(f)
     else:
-        print("Extracting malicious...")
         for tokens in js_extraction.get_all_js_token(False):
             if not tokens:
                 continue
@@ -39,12 +35,10 @@ def tfidf_extractor(ngramx,ngramy):
         with open(MALICIOUS_TFIDF_FNAME,'wb') as f:
             pickle.dump(flat_malicious,f)
     
-    print("Training TfidfVectorizer")
+    print("[+] Training TfidfVectorizer")
     vectorizer = TfidfVectorizer(ngram_range=(ngramx,ngramy))
     vectorizer.fit(flat_benign)
-
-    #Do we need to train on malicious?
-    #vectorizer.fit(flat_malicious)
+    vectorizer.fit(flat_malicious)
     
     list_of_vectors_benign = vectorizer.transform(flat_benign)
     list_of_vectors_malicious = vectorizer.transform(flat_malicious)

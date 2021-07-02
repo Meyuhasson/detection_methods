@@ -2,3 +2,4 @@
 .DS_Store
 benign_tfidf.pickle
 malicious_tfidf.pickle
+__pycache__/
