@@ -10,6 +10,8 @@
 ### Benign
 [React Dataset](https://github.com/facebook/react)
 
+[Jasmine Dataset](https://github.com/jasmine/jasmine)
+
 ## Add js/html files to our DataSet
 ```shell
  > python3 js_extraction.py -h
