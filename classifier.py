@@ -1,6 +1,6 @@
 from feature_extraction import tfidf_extractor
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.model_selection import cross_validate
 from sklearn.metrics import accuracy_score, precision_score, recall_score, make_scorer
 from scipy.sparse import vstack
 
@@ -28,6 +28,8 @@ def main():
     scores = cross_validate(random_forest, all_samples, all_classes, scoring = {"accuracy": make_scorer(accuracy_score), 
                             "precision" : make_scorer(precision_score), "recall": make_scorer(recall_score)}, cv=kfold)
 
+    print("[+] Evaluating model")
+    
     accuracy = scores["test_accuracy"].mean()
     precision = scores["test_precision"].mean()
     recall = scores["test_recall"].mean()
