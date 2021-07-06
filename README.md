@@ -1,4 +1,6 @@
 # Malicious JS Detection
+[Report](https://www.overleaf.com/2177694124dmmtpdwvndcj)
+
 [Article](https://swag.cispa.saarland/papers/fass2019jstap.pdf)
 
 [JStap GitHub](https://github.com/Aurore54F/JStap)
