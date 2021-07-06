@@ -46,6 +46,8 @@ def export_file(from_dir: str, malicious: str, js_file=True):
     path_pattern = f"{from_dir}/**/*.js" if js_file else f"{from_dir}/**/*.html"
     to_dir = "MALICIOUS" if malicious else "BENIGN"
     for file_path in glob.iglob(path_pattern, recursive=True):
+        if os.path.isdir(file_path):
+            continue
         to_dir_path = os.path.join(to_dir, os.path.dirname(file_path))
         Path(to_dir_path).mkdir(parents=True, exist_ok=True)
         shutil.copy(file_path, to_dir_path)
