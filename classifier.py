@@ -25,7 +25,7 @@ def main():
 
     print("[+] Training Random Forest Classifier")
     random_forest = RandomForestClassifier()
-    random_forest.fit(Xtrain,Ytrain)
+    random_forest.fit(Xtrain, Ytrain)
 
     print("[+] Evaluating model")
     predict_test = random_forest.predict(Xtest)
