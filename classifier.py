@@ -1,7 +1,7 @@
 from feature_extraction import tfidf_extractor
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.metrics import accuracy_score, precision_score, recall_score, make_scorer
 from scipy.sparse import vstack
 
 def main():
@@ -21,19 +21,16 @@ def main():
     all_classes = []
     all_classes.extend(benign_classifications)
     all_classes.extend(malicious_classifications)
-    Xtrain, Xtest, Ytrain, Ytest = train_test_split(all_samples, all_classes, random_state=1, stratify=all_classes)
 
-    print("[+] Training Random Forest Classifier")
+    kfold = 5
+    print(f"[+] {kfold} Fold Cross Validation Random Forest Classifier")
     random_forest = RandomForestClassifier()
-    random_forest.fit(Xtrain, Ytrain)
+    scores = cross_validate(random_forest, all_samples, all_classes, scoring = {"accuracy": make_scorer(accuracy_score), 
+                            "precision" : make_scorer(precision_score), "recall": make_scorer(recall_score)}, cv=kfold)
 
-    print("[+] Evaluating model")
-    predict_test = random_forest.predict(Xtest)
-
-    accuracy = accuracy_score(Ytest,predict_test)
-    precision = precision_score(Ytest, predict_test)
-    recall = recall_score(Ytest, predict_test)
-
+    accuracy = scores["test_accuracy"].mean()
+    precision = scores["test_precision"].mean()
+    recall = scores["test_recall"].mean()
     print(f"\t- Accuracy = {accuracy}") # (tp + tn) / (tp + tn + fp + fn)
     print(f"\t- Precision = {precision}") # tp / (tp + fp)
     print(f"\t- Recall = {recall}") # tp / (tp+fn)
